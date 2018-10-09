@@ -16,8 +16,13 @@ def ID3(examples, default):
     best = min(info, key=info.get)
     t.decision_attribute = best
     for i in examples:
-      i.
-
+      if i[best] in t.children:
+        t.children[i[best]].append(i)
+      else:
+        newNode = Node()
+        newNode.label = i[best]
+        newNode.depth = t.depth + 1
+        newNode.examples.append(i)
 
 def prune(node, examples):
   '''
