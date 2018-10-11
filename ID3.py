@@ -73,10 +73,14 @@ def ID3(examples, default):
       exampleDict = {}
       #Sort examples based on best attribute 
       print("Sorting examples to the new children")
+      print(best)
+      print(examples)
       for i in examples:
         if i[best] in t.children:
-          t.children[i.best].examples.append(i)
+          print("Found child node")
+          t.children[i[best]].examples.append(i)
         else:
+          print("Making new child for node")
           newNode = Node()
           newNode.label = i[best]
           newNode.depth = t.depth + 1
@@ -168,9 +172,14 @@ def info_gain(examples):
           attribute_prob[key] += 1
   res = {}
   print("Assigning actual probabilities and then entropy vals")
-  for att, value in attribute_prob.items():
-    attribute_prob[att] = (value / len(examples))
+  print(attribute_prob)
+  for att in attribute_prob:
+    print("Running 1")
+    print(att)
+    res[att] = (attribute_prob[att] / len(examples))
+    printf("Running 2")
     ent = -attribute_prob[att] * math.log(attribute_prob[att], 2)
+    printf("Running 3")
     res[att] = attribute_prob[att] * ent
 
   print("Returning Result")
