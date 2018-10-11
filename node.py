@@ -6,3 +6,5 @@ class Node:
     self.decision_attribute = ""
     self.examples = ()
     self.depth = 0
+    self.decisionMade = ""
+    self.value = None

@@ -9,20 +9,69 @@ def ID3(examples, default):
   Any missing attributes are denoted with a value of "?"
   '''
   t = Node()
+  #This will see if we are a recursive call
+  if default != 0:
+    t = default
+  #This is for if we are given a set of no examples at all
   if examples == None:
+    return t
   #TODO check examples classification
   else:
-    info = info_gain(examples)
-    best = min(info, key=info.get)
-    t.decision_attribute = best
+
+    #This will check if the classification of the examples are all identical, or if all attr values are equal
+    sameClassification = 1
+    sameAttributes = 1 
+    attrVals = {}
+    for i in examples[0]:
+      attrVals[i] = examples[0][i];
     for i in examples:
-      if i[best] in t.children:
-        t.children[i[best]].append(i)
-      else:
-        newNode = Node()
-        newNode.label = i[best]
-        newNode.depth = t.depth + 1
-        newNode.examples.append(i)
+      for j in i:
+        if j == "Class":
+          if i[j] != attrVals[j]:
+            sameClassification = 0
+        else:
+          if i[j] != attrVals[j]:
+            sameAttributes = 0
+
+    #The examples all have the same classification
+    if sameClassification:
+      #We set the current node we have to just be any of the 'Class' values
+      t.decisionMade = "Y"
+      t.value = examples[0]['Class']
+      return t
+
+    #The examples are all the same input vals, we return the mode of Class
+    elif sameAttributes:
+      classCount = {}
+      for i in examples:
+        i[examples["Class"]] += 1
+      t.decisionMade = "Y"
+      t.value = max(classCount, key=classCount.get)
+      return t
+
+    #The examples are not a special case and we must compute IG and make a decision for the tree
+    else:
+      info = info_gain(examples)
+      best = min(info, key=info.get)
+      t.decision_attribute = best
+      exampleDict = {}
+      #Sort examples based on best attribute 
+      for i in examples:
+        if i[best] in t.children:
+          exampleDict[i[best]].append(i)
+        else:
+          newNode = Node()
+          newNode.label = i[best]
+          newNode.depth = t.depth + 1
+          newExamples = []
+          newExamples.append(i)
+          exampleDict[i[best]] = newExamples
+          t.children[i[best]] = newNode
+      #Run recursion on all the children
+      for i in t.children:
+        i = ID3(exampleDict[i.label],i)
+
+      return t
 
 def prune(node, examples):
   '''
@@ -35,14 +84,33 @@ def test(node, examples):
   Takes in a trained tree and a test set of examples.  Returns the accuracy (fraction
   of examples the tree classifies correctly).
   '''
-
+  totalExamples = len(examples)
+  correct = 0
+  for i in examples
+    result = evaluate(node, i)
+    if result == i["Class"]
+      correct += 1
+  return correct / totalExamples
 
 def evaluate(node, example):
   '''
   Takes in a tree and one example.  Returns the Class value that the tree
   assigns to the example.
   '''
+  #Check if we have arrived at a solution Node
+  if node.decisionMade == "Y":
+    return node.value
 
+  direction = example[node.decision_attribute]
+  newNode = node.children[direction]
+
+  #Make sure that the child exists
+  if(newNode != None):
+    return evaluate(newNode, example)
+  #if it doesn't, we will take the first child tree
+  else: 
+    return evaluate(list(node.children.values())[0], example)
+  
 
 def info_gain(examples):
   attribute_prob = {}
