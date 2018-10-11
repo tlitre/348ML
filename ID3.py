@@ -8,6 +8,7 @@ def ID3(examples, default):
   and the target class variable is a special attribute with the name "Class".
   Any missing attributes are denoted with a value of "?"
   '''
+  print("Training")
   t = Node()
   #This will see if we are a recursive call
   if default != 0:
@@ -17,64 +18,85 @@ def ID3(examples, default):
     return t
   #TODO check examples classification
   else:
-
+    print("Running to check classification special examples")
     #This will check if the classification of the examples are all identical, or if all attr values are equal
     sameClassification = 1
     sameAttributes = 1 
     attrVals = {}
+    print("Assigning initial examples")
     for i in examples[0]:
       attrVals[i] = examples[0][i];
+    print("Going through each example and comparing to example 1 values")
     for i in examples:
       for j in i:
-        if j == "Class":
+        
+        if j == 'Class' and sameClassification:
           if i[j] != attrVals[j]:
+            print("Not the same Classification")
             sameClassification = 0
         else:
-          if i[j] != attrVals[j]:
+          if i[j] != attrVals[j] and sameAttributes:
+            print("Not same attributes")
             sameAttributes = 0
+
+    print("Now assigning MODE for Node for pruning and indecision")
     #This will find the MODE answer for every node for use when we can't make a decision or for pruning
     classCount = {}
     for i in examples:
-      i[examples["Class"]] += 1
+      if i['Class'] in classCount:
+        classCount[i['Class']] += 1
+      else:
+        classCount[i['Class']] = 1
     t.value = max(classCount, key=classCount.get)
 
     #The examples all have the same classification
     if sameClassification:
+      print("We all have the same classification")
       #We set the current node we have to just be any of the 'Class' values
-      t.decisionMade = "Y"
+      t.decisionMade = 'Y'
       t.value = examples[0]['Class']
       return t
 
     #The examples are all the same input vals, we return the mode of Class
     elif sameAttributes:
-      t.decisionMade = "Y"
+      print("We all have the same attributes")
+      t.decisionMade = 'Y'
       return t
 
     #The examples are not a special case and we must compute IG and make a decision for the tree
     else:
+      print("Calculating Info Gain")
       info = info_gain(examples)
+      print("Grabbing best attribute from info gain: ")
       best = min(info, key=info.get)
       t.decision_attribute = best
       exampleDict = {}
       #Sort examples based on best attribute 
+      print("Sorting examples to the new children")
       for i in examples:
         if i[best] in t.children:
-          exampleDict[i[best]].append(i)
+          t.children[i.best].examples.append(i)
         else:
           newNode = Node()
           newNode.label = i[best]
           newNode.depth = t.depth + 1
           newExamples = []
           newExamples.append(i)
-          exampleDict[i[best]] = newExamples
+          newNode.examples = newExamples
           t.children[i[best]] = newNode
+            
+      print(t.children)
+      print("Running ID3 on children")
       #Run recursion on all the children
       for i in t.children:
-        i = ID3(exampleDict[i.label],i)
+        print(i)
+        print(t.children[i].examples) 
+        i = ID3(t.children[i].examples,t.children[i])
 
       return t
 
 def prune(node, examples):
+  print("pruning")
   '''
   Takes in a trained tree and a validation set of examples.  Prunes nodes in order
   to improve accuracy on the validation data; the precise pruning strategy is up to you.
@@ -84,19 +106,20 @@ def prune(node, examples):
   baseAccuracy = test(node, examples)
   childrenToKill = []
   for i in node.children:
-    if i.decisionMade != "Y"
-      i.decisionMade = "Y"
+    if i.decisionMade != 'Y':
+      i.decisionMade = 'Y'
       newAccuracy = test(node, examples)
       if newAccuracy >= baseAccuracy:
         #kill children's children
         i.children = {}
       else:
-        i.decisionMade = ""
+        i.decisionMade = ''
         #potentially prune the childrens children
         i = prune(i, examples)
   return node
 
 def test(node, examples):
+  print("Testing")
   '''
   Takes in a trained tree and a test set of examples.  Returns the accuracy (fraction
   of examples the tree classifies correctly).
@@ -105,7 +128,7 @@ def test(node, examples):
   correct = 0
   for i in examples:
     result = evaluate(node, i)
-    if result == i["Class"]:
+    if result == i['class']:
       correct += 1
   return correct / totalExamples
 
@@ -115,7 +138,7 @@ def evaluate(node, example):
   assigns to the example.
   '''
   #Check if we have arrived at a solution Node
-  if node.decisionMade == "Y":
+  if node.decisionMade == 'Y':
     return node.value
 
   direction = example[node.decision_attribute]
@@ -131,20 +154,26 @@ def evaluate(node, example):
 
 def info_gain(examples):
   attribute_prob = {}
-  for key in examples[0]:
+  print("Calculating each attribute probability")
+  for key in examples[0]:  
     if key != 'Class':
+      print("Created attribute entry")
       attribute_prob[key] = 0
+  print("Iterating through all examples and building probabilities")
   for i in examples:
-    c = i['Class']
-    for key, value in i:
+    c = i['Class'] 
+    for key, value in i.items(): 
       if key != 'Class':
-        if value == c:
+        if value == c: 
           attribute_prob[key] += 1
   res = {}
-  for att, value in attribute_prob:
+  print("Assigning actual probabilities and then entropy vals")
+  for att, value in attribute_prob.items():
     attribute_prob[att] = (value / len(examples))
     ent = -attribute_prob[att] * math.log(attribute_prob[att], 2)
     res[att] = attribute_prob[att] * ent
+
+  print("Returning Result")
   return res
     
       
