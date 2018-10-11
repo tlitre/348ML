@@ -32,6 +32,11 @@ def ID3(examples, default):
         else:
           if i[j] != attrVals[j]:
             sameAttributes = 0
+    #This will find the MODE answer for every node for use when we can't make a decision or for pruning
+    classCount = {}
+    for i in examples:
+      i[examples["Class"]] += 1
+    t.value = max(classCount, key=classCount.get)
 
     #The examples all have the same classification
     if sameClassification:
@@ -42,11 +47,7 @@ def ID3(examples, default):
 
     #The examples are all the same input vals, we return the mode of Class
     elif sameAttributes:
-      classCount = {}
-      for i in examples:
-        i[examples["Class"]] += 1
       t.decisionMade = "Y"
-      t.value = max(classCount, key=classCount.get)
       return t
 
     #The examples are not a special case and we must compute IG and make a decision for the tree
@@ -78,6 +79,22 @@ def prune(node, examples):
   Takes in a trained tree and a validation set of examples.  Prunes nodes in order
   to improve accuracy on the validation data; the precise pruning strategy is up to you.
   '''
+  #The method will be to work down a branch at a time and test taking the mode of each node instead of navigating further
+  #if it improves accuracy, then we will kill all the children (lol) and set decisionMade to "Y"
+  baseAccuracy = test(node, examples)
+  childrenToKill = []
+  for i in node.children:
+    if i.decisionMade != "Y"
+      i.decisionMade = "Y"
+      newAccuracy = test(node, examples)
+      if newAccuracy >= baseAccuracy:
+        #kill children's children
+        i.children = {}
+      else:
+        i.decisionMade = ""
+        #potentially prune the childrens children
+        i = prune(i, examples)
+  return node
 
 def test(node, examples):
   '''
@@ -86,9 +103,9 @@ def test(node, examples):
   '''
   totalExamples = len(examples)
   correct = 0
-  for i in examples
+  for i in examples:
     result = evaluate(node, i)
-    if result == i["Class"]
+    if result == i["Class"]:
       correct += 1
   return correct / totalExamples
 
@@ -107,9 +124,9 @@ def evaluate(node, example):
   #Make sure that the child exists
   if(newNode != None):
     return evaluate(newNode, example)
-  #if it doesn't, we will take the first child tree
+  #if it doesn't, we will take the MODE of the examples it trained on
   else: 
-    return evaluate(list(node.children.values())[0], example)
+    return node.value
   
 
 def info_gain(examples):
