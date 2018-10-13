@@ -25,11 +25,10 @@ def ID3(examples, default):
     attrVals = {}
     print("Assigning initial examples")
     for i in examples[0]:
-      attrVals[i] = examples[0][i];
+      attrVals[i] = examples[0][i]
     print("Going through each example and comparing to example 1 values")
     for i in examples:
-      for j in i:
-        
+      for j in i.keys():        
         if j == 'Class' and sameClassification:
           if i[j] != attrVals[j]:
             print("Not the same Classification")
@@ -76,7 +75,7 @@ def ID3(examples, default):
       print(best)
       print(examples)
       for i in examples:
-        if i[best] in t.children:
+        if i[best] in t.children.keys():
           print("Found child node")
           t.children[i[best]].examples.append(i)
         else:
