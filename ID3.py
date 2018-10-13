@@ -166,20 +166,19 @@ def info_gain(examples):
   for i in examples:
     c = i['Class'] 
     for key, value in i.items(): 
-      if key != 'Class':
-        if value == c: 
-          attribute_prob[key] += 1
+      if key != 'Class' and value == c:
+        attribute_prob[key] += 1
   res = {}
   print("Assigning actual probabilities and then entropy vals")
   print(attribute_prob)
   for att in attribute_prob:
     print("Running 1")
     print(att)
-    res[att] = (attribute_prob[att] / len(examples))
+    prob = (attribute_prob[att] / len(examples))
     print("Running 2")
     ent = -attribute_prob[att] * math.log(attribute_prob[att], 2)
     print("Running 3")
-    res[att] = attribute_prob[att] * ent
+    res[att] = prob * ent
 
   print("Returning Result")
   return res
