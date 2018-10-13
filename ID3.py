@@ -177,9 +177,9 @@ def info_gain(examples):
     print("Running 1")
     print(att)
     res[att] = (attribute_prob[att] / len(examples))
-    printf("Running 2")
+    print("Running 2")
     ent = -attribute_prob[att] * math.log(attribute_prob[att], 2)
-    printf("Running 3")
+    print("Running 3")
     res[att] = attribute_prob[att] * ent
 
   print("Returning Result")
