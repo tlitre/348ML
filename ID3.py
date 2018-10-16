@@ -111,16 +111,16 @@ def prune(node, examples):
   baseAccuracy = test(node, examples)
   childrenToKill = []
   for i in node.children:
-    if i.decisionMade != 'Y':
-      i.decisionMade = 'Y'
+    if node.children[i].decisionMade != 'Y':
+      node.children[i].decisionMade = 'Y'
       newAccuracy = test(node, examples)
       if newAccuracy >= baseAccuracy:
         #kill children's children
-        i.children = {}
+        node.children[i].children = {}
       else:
-        i.decisionMade = ''
+        node.children[i].decisionMade = ''
         #potentially prune the childrens children
-        i = prune(i, examples)
+        i = prune(node.children[i], examples)
   return node
 
 def test(node, examples):
