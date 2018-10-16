@@ -68,6 +68,7 @@ def ID3(examples, default):
       info = info_gain(examples)
       print("Grabbing best attribute from info gain: ")
       best = min(info, key=info.get)
+      print(best)
       t.decision_attribute = best
       exampleDict = {}
       #Sort examples based on best attribute 
@@ -157,6 +158,11 @@ def evaluate(node, example):
 
 def info_gain(examples):
   attribute_prob = {}
+  entropies = {}
+  split_examples = {}
+  split_examples_res = {}
+  res = {}
+
   print("Calculating each attribute probability")
   for key in examples[0]:  
     if key != 'Class':
@@ -168,34 +174,46 @@ def info_gain(examples):
     for key, value in i.items(): 
       if key != 'Class' and value == c:
         attribute_prob[key] += 1
-  res = {}
-  print("Assigning actual probabilities and then entropy vals")
+  print("Getting resulting entropies from splits")
+  for i in attribute_prob:
+    print(i)
+    split_examples.clear()
+    print("Going through examples and splitting on attr above")
+    for j in examples:
+      if j[i] in split_examples:
+        print("adding example to existing dict entry")
+        split_examples[j[i]].append(j)
+      else:
+        split_examples[j[i]] = []
+        split_examples[j[i]].append(j)
+        print("adding example to NEW dict entry")
+    for j in split_examples:
+      split_examples_res[j] = find_entropy(split_examples[j], j)
+    entropies[i] = 0
+    for j in split_examples_res:
+      entropies[i] += split_examples_res[j]
+
+  print("Calculating Info Gain")
   print(attribute_prob)
   for att in attribute_prob:
     print("Running 1")
     print(att)
     prob = (attribute_prob[att] / len(examples))
     print("Running 2")
-    ent = -attribute_prob[att] * math.log(attribute_prob[att], 2)
-    print("Running 3")
-    res[att] = prob * ent
+    res[att] = attribute_prob[att] * entropies[att]
 
   print("Returning Result")
   return res
     
       
-'''
-def find_entropy(examples, probabilities):
-  summer = {}
+
+def find_entropy(examples, attr):
+  ent = 0
+  attribute_prob = {}
   for i in examples:
-    if !summer[i['Class']]:
-      summer[i['Class']] = 1
-    else:
-      summer[i['Class']] += 1
-  res = 0
-  for key in summer.keys():
-    x = res[key]
-    ent = x - (x / len(examples)) * math.log(x / len(examples), 2)
-    res['key'] = ent
-  ent
-'''
+    if i[attr] == examples['Class']:
+      ent += 1
+  ent = ent / len(examples)
+  ent = -ent*log(ent,2)
+  return ent
+
