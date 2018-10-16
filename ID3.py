@@ -180,7 +180,9 @@ def info_gain(examples):
     print(i)
     split_examples.clear()
     print("Going through examples and splitting on attr above")
+    print(len(examples))
     for j in examples:
+      print(j)
       if j[i] in split_examples:
         print("adding example to existing dict entry")
         split_examples[j[i]].append(j)
@@ -189,7 +191,9 @@ def info_gain(examples):
         split_examples[j[i]].append(j)
         print("adding example to NEW dict entry")
     for j in split_examples:
-      split_examples_res[j] = find_entropy(split_examples[j], j)
+      print("Finding entropy for split examples:")
+      print(split_examples[j])
+      split_examples_res[j] = find_entropy(split_examples[j], i)
     entropies[i] = 0
     for j in split_examples_res:
       entropies[i] += split_examples_res[j]
@@ -210,11 +214,16 @@ def info_gain(examples):
 
 def find_entropy(examples, attr):
   ent = 0
-  attribute_prob = {}
   for i in examples:
-    if i[attr] == examples['Class']:
+    print(i)
+    print(attr)
+    print(i[attr])
+    if i[attr] == i['Class']:
+      print("Increment Entropy")
       ent += 1
   ent = ent / len(examples)
   ent = -ent*math.log(ent,2)
+  print("Entropy is:")
+  print(ent)
   return ent
 
