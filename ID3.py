@@ -219,10 +219,19 @@ def find_entropy(examples, attr):
     print(attr)
     print(i[attr])
     if i[attr] == i['Class']:
-      print("Increment Entropy")
-      ent += 1.0
+      print("Incrementing Entropy")
+      ent += 1
+    else:
+      print("Did not increment entropy")
+  print("Now running ent / len(examples)")
+  print(ent)
+  print(len(examples))
   ent = ent / len(examples)
-  ent = -ent*math.log(ent,2)
+  print("Now -ent*math.log(ent,2)")
+  if ent != 0:
+    ent = -ent*math.log(ent,2)
+  else:
+    ent = 0
   print("Entropy is:")
   print(ent)
   return ent
