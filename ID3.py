@@ -213,14 +213,14 @@ def info_gain(examples):
       
 
 def find_entropy(examples, attr):
-  ent = 0
+  ent = 0.0
   for i in examples:
     print(i)
     print(attr)
     print(i[attr])
     if i[attr] == i['Class']:
       print("Increment Entropy")
-      ent += 1
+      ent += 1.0
   ent = ent / len(examples)
   ent = -ent*math.log(ent,2)
   print("Entropy is:")
