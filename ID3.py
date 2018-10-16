@@ -48,6 +48,10 @@ def ID3(examples, default):
       else:
         classCount[i['Class']] = 1
     t.value = max(classCount, key=classCount.get)
+    
+    if len(t.previous_decisions) == len(examples[0]) - 1:
+      t.decisionMade = 'Y'
+      return t
 
     #The examples all have the same classification
     if sameClassification:
@@ -68,10 +72,14 @@ def ID3(examples, default):
       ##print("Calculating Info Gain")
       info = info_gain(examples)
       ##print("Grabbing best attribute from info gain: ")
-      best = min(info, key=info.get)
+      unused_attributes = {}
+      for i in info.keys():
+        if not(i in t.previous_decisions):
+          unused_attributes[i] = info[i]
+      best = min(unused_attributes, key=info.get)
       ##print(best)
       t.decision_attribute = best
-      exampleDict = {}
+      t.previous_decisions.append(best)
       #Sort examples based on best attribute 
       ##print("Sorting examples to the new children")
       ##print(best)
@@ -85,6 +93,7 @@ def ID3(examples, default):
           newNode = Node()
           newNode.label = i[best]
           newNode.depth = t.depth + 1
+          newNode.previous_decisions = t.previous_decisions
           newExamples = []
           newExamples.append(i)
           newNode.examples = newExamples
@@ -109,7 +118,6 @@ def prune(node, examples):
   #The method will be to work down a branch at a time and test taking the mode of each node instead of navigating further
   #if it improves accuracy, then we will kill all the children (lol) and set decisionMade to "Y"
   baseAccuracy = test(node, examples)
-  childrenToKill = []
   for i in node.children:
     if node.children[i].decisionMade != 'Y':
       node.children[i].decisionMade = 'Y'
@@ -130,11 +138,11 @@ def test(node, examples):
   of examples the tree classifies correctly).
   '''
   totalExamples = len(examples)
-  correct = 0
+  correct = 0.0
   for i in examples:
     result = evaluate(node, i)
     if result == i['Class']:
-      correct += 1
+      correct += 1.0
   return correct / totalExamples
 
 def evaluate(node, example):
@@ -147,7 +155,10 @@ def evaluate(node, example):
     return node.value
 
   direction = example[node.decision_attribute]
-  newNode = node.children[direction]
+  if direction in node.children: 
+    newNode = node.children[direction]
+  else:
+    return node.value
 
   #Make sure that the child exists
   if(newNode != None):
@@ -203,7 +214,7 @@ def info_gain(examples):
   for att in attribute_prob:
     #print("Running 1")
     #print(att)
-    prob = (attribute_prob[att] / len(examples))
+    #prob = (attribute_prob[att] / len(examples))
     #print("Running 2")
     res[att] = attribute_prob[att] * entropies[att]
 
