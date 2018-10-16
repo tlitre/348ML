@@ -89,3 +89,7 @@ def testPruningOnHouseData(inFile):
   print(withoutPruning)
   print("average with pruning",sum(withPruning)/len(withPruning)," without: ",sum(withoutPruning)/len(withoutPruning))
   
+testID3AndEvaluate()
+testPruning()
+testID3AndTest()
+testPruningOnHouseData("/Users/tristan/odrive/Dropbox/School/Fall2018/349/348ML/house_votes_84.data")

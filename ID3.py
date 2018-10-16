@@ -9,7 +9,7 @@ def ID3(examples, default):
   and the target class variable is a special attribute with the name "Class".
   Any missing attributes are denoted with a value of "?"
   '''
-  print("Training")
+  ##print("Training")
   t = Node()
   #This will see if we are a recursive call
   if default != 0:
@@ -19,27 +19,27 @@ def ID3(examples, default):
     return t
   #TODO check examples classification
   else:
-    print("Running to check classification special examples")
+    #print("Running to check classification special examples")
     #This will check if the classification of the examples are all identical, or if all attr values are equal
     sameClassification = 1
     sameAttributes = 1 
     attrVals = {}
-    print("Assigning initial examples")
+    ##print("Assigning initial examples")
     for i in examples[0]:
       attrVals[i] = examples[0][i]
-    print("Going through each example and comparing to example 1 values")
+    ##print("Going through each example and comparing to example 1 values")
     for i in examples:
       for j in i.keys():        
         if j == 'Class' and sameClassification:
           if i[j] != attrVals[j]:
-            print("Not the same Classification")
+            ##print("Not the same Classification")
             sameClassification = 0
         else:
           if i[j] != attrVals[j] and sameAttributes:
-            print("Not same attributes")
+            ##print("Not same attributes")
             sameAttributes = 0
 
-    print("Now assigning MODE for Node for pruning and indecision")
+    ##print("Now assigning MODE for Node for pruning and indecision")
     #This will find the MODE answer for every node for use when we can't make a decision or for pruning
     classCount = {}
     for i in examples:
@@ -51,7 +51,7 @@ def ID3(examples, default):
 
     #The examples all have the same classification
     if sameClassification:
-      print("We all have the same classification")
+      ##print("We all have the same classification")
       #We set the current node we have to just be any of the 'Class' values
       t.decisionMade = 'Y'
       t.value = examples[0]['Class']
@@ -59,29 +59,29 @@ def ID3(examples, default):
 
     #The examples are all the same input vals, we return the mode of Class
     elif sameAttributes:
-      print("We all have the same attributes")
+      ##print("We all have the same attributes")
       t.decisionMade = 'Y'
       return t
 
     #The examples are not a special case and we must compute IG and make a decision for the tree
     else:
-      print("Calculating Info Gain")
+      ##print("Calculating Info Gain")
       info = info_gain(examples)
-      print("Grabbing best attribute from info gain: ")
+      ##print("Grabbing best attribute from info gain: ")
       best = min(info, key=info.get)
-      print(best)
+      ##print(best)
       t.decision_attribute = best
       exampleDict = {}
       #Sort examples based on best attribute 
-      print("Sorting examples to the new children")
-      print(best)
-      print(examples)
+      ##print("Sorting examples to the new children")
+      ##print(best)
+      ##print(examples)
       for i in examples:
         if i[best] in t.children.keys():
-          print("Found child node")
+          ##print("Found child node")
           t.children[i[best]].examples.append(i)
         else:
-          print("Making new child for node")
+          ##print("Making new child for node")
           newNode = Node()
           newNode.label = i[best]
           newNode.depth = t.depth + 1
@@ -90,18 +90,18 @@ def ID3(examples, default):
           newNode.examples = newExamples
           t.children[i[best]] = newNode
             
-      print(t.children)
-      print("Running ID3 on children")
+      ##print(t.children)
+      ##print("Running ID3 on children")
       #Run recursion on all the children
       for i in t.children:
-        print(i)
-        print(t.children[i].examples) 
+        ##print(i)
+        ##print(t.children[i].examples) 
         i = ID3(t.children[i].examples,t.children[i])
 
       return t
 
 def prune(node, examples):
-  print("pruning")
+  #print("pruning")
   '''
   Takes in a trained tree and a validation set of examples.  Prunes nodes in order
   to improve accuracy on the validation data; the precise pruning strategy is up to you.
@@ -124,7 +124,7 @@ def prune(node, examples):
   return node
 
 def test(node, examples):
-  print("Testing")
+  #print("Testing")
   '''
   Takes in a trained tree and a test set of examples.  Returns the accuracy (fraction
   of examples the tree classifies correctly).
@@ -133,7 +133,7 @@ def test(node, examples):
   correct = 0
   for i in examples:
     result = evaluate(node, i)
-    if result == i['class']:
+    if result == i['Class']:
       correct += 1
   return correct / totalExamples
 
@@ -164,50 +164,50 @@ def info_gain(examples):
   split_examples_res = {}
   res = {}
 
-  print("Calculating each attribute probability")
+  #print("Calculating each attribute probability")
   for key in examples[0]:  
     if key != 'Class':
-      print("Created attribute entry")
+      #print("Created attribute entry")
       attribute_prob[key] = 0
-  print("Iterating through all examples and building probabilities")
+  #print("Iterating through all examples and building probabilities")
   for i in examples:
     c = i['Class'] 
     for key, value in i.items(): 
       if key != 'Class' and value == c:
         attribute_prob[key] += 1
-  print("Getting resulting entropies from splits")
+  #print("Getting resulting entropies from splits")
   for i in attribute_prob:
-    print(i)
+    #print(i)
     split_examples.clear()
-    print("Going through examples and splitting on attr above")
-    print(len(examples))
+    #print("Going through examples and splitting on attr above")
+    #print(len(examples))
     for j in examples:
-      print(j)
+      #print(j)
       if j[i] in split_examples:
-        print("adding example to existing dict entry")
+        #print("adding example to existing dict entry")
         split_examples[j[i]].append(j)
       else:
         split_examples[j[i]] = []
         split_examples[j[i]].append(j)
-        print("adding example to NEW dict entry")
+        #print("adding example to NEW dict entry")
     for j in split_examples:
-      print("Finding entropy for split examples:")
-      print(split_examples[j])
+      #print("Finding entropy for split examples:")
+      #print(split_examples[j])
       split_examples_res[j] = find_entropy(split_examples[j], i)
     entropies[i] = 0
     for j in split_examples_res:
       entropies[i] += split_examples_res[j]
 
-  print("Calculating Info Gain")
-  print(attribute_prob)
+  #print("Calculating Info Gain")
+  #print(attribute_prob)
   for att in attribute_prob:
-    print("Running 1")
-    print(att)
+    #print("Running 1")
+    #print(att)
     prob = (attribute_prob[att] / len(examples))
-    print("Running 2")
+    #print("Running 2")
     res[att] = attribute_prob[att] * entropies[att]
 
-  print("Returning Result")
+  #print("Returning Result")
   return res
     
       
@@ -215,24 +215,22 @@ def info_gain(examples):
 def find_entropy(examples, attr):
   ent = 0.0
   for i in examples:
-    print(i)
-    print(attr)
-    print(i[attr])
+    #print(i)
+    #print(attr)
+    #print(i[attr])
     if i[attr] == i['Class']:
-      print("Incrementing Entropy")
+      #print("Incrementing Entropy")
       ent += 1
-    else:
-      print("Did not increment entropy")
-  print("Now running ent / len(examples)")
-  print(ent)
-  print(len(examples))
+  #print("Now running ent / len(examples)")
+  #print(ent)
+  #print(len(examples))
   ent = ent / len(examples)
-  print("Now -ent*math.log(ent,2)")
+  #print("Now -ent*math.log(ent,2)")
   if ent != 0:
     ent = -ent*math.log(ent,2)
   else:
     ent = 0
-  print("Entropy is:")
-  print(ent)
+  #print("Entropy is:")
+  #print(ent)
   return ent
 
