@@ -1,3 +1,4 @@
+
 from node import Node
 import math
 
@@ -188,14 +189,14 @@ def info_gain(examples):
 def find_entropy(examples, probabilities):
   summer = {}
   for i in examples:
-    if !summer[i['Class']]:
-      summer[i['Class']] = 1
-    else:
+    if i['Class'] in summer:
       summer[i['Class']] += 1
+    else:
+      summer[i['Class']] = 1
   res = 0
   for key in summer.keys():
     x = res[key]
     ent = x - (x / len(examples)) * math.log(x / len(examples), 2)
-    res['key'] = ent
+    res[key] = ent
   ent
 '''
