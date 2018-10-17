@@ -175,73 +175,49 @@ def info_gain(examples):
   split_examples_res = {}
   res = {}
 
-  #print("Calculating each attribute probability")
   for key in examples[0]:  
     if key != 'Class':
-      #print("Created attribute entry")
       attribute_prob[key] = 0
-  #print("Iterating through all examples and building probabilities")
+
   for i in examples:
     c = i['Class'] 
     for key, value in i.items(): 
       if key != 'Class' and value == c:
         attribute_prob[key] += 1
-  #print("Getting resulting entropies from splits")
   for i in attribute_prob:
-    #print(i)
     split_examples.clear()
-    #print("Going through examples and splitting on attr above")
-    #print(len(examples))
     for j in examples:
-      #print(j)
       if j[i] in split_examples:
-        #print("adding example to existing dict entry")
         split_examples[j[i]].append(j)
       else:
         split_examples[j[i]] = []
         split_examples[j[i]].append(j)
-        #print("adding example to NEW dict entry")
-    for j in split_examples:
-      #print("Finding entropy for split examples:")
-      #print(split_examples[j])
-      split_examples_res[j] = find_entropy(split_examples[j], i)
+        for j in split_examples:
+          split_examples_res[j] = find_entropy(split_examples[j], i)
     entropies[i] = 0
     for j in split_examples_res:
       entropies[i] += split_examples_res[j]
 
-  #print("Calculating Info Gain")
-  #print(attribute_prob)
   for att in attribute_prob:
-    #print("Running 1")
-    #print(att)
-    #prob = (attribute_prob[att] / len(examples))
-    #print("Running 2")
     res[att] = attribute_prob[att] * entropies[att]
 
-  #print("Returning Result")
+  
   return res
     
       
 
 def find_entropy(examples, attr):
   ent = 0.0
+  invEnt = 0.0
   for i in examples:
-    #print(i)
-    #print(attr)
-    #print(i[attr])
-    if i[attr] == i['Class']:
-      #print("Incrementing Entropy")
+    if i[attr] == i['Class']: 
       ent += 1
-  #print("Now running ent / len(examples)")
-  #print(ent)
-  #print(len(examples))
   ent = ent / len(examples)
-  #print("Now -ent*math.log(ent,2)")
   if ent != 0:
+    invEnt = 1 / ent
     ent = -ent*math.log(ent,2)
+    ent += -invEnt*math.log(invEnt,2)
   else:
     ent = 0
-  #print("Entropy is:")
-  #print(ent)
   return ent
 
