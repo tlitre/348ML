@@ -11,9 +11,13 @@ def ID3(examples, default):
   '''
   ##print("Training")
   t = Node()
+  t.value = ""
   #This will see if we are a recursive call
   if default != 0:
-    t = default
+    if type(default) is Node:
+      t = default
+    elif type(default) is str:
+      t.value = default
   #This is for if we are given a set of no examples at all
   if examples == None:
     return t
@@ -107,6 +111,7 @@ def ID3(examples, default):
         ##print(t.children[i].examples) 
         i = ID3(t.children[i].examples,t.children[i])
 
+        #i = ID3(t.children[i].examples, 0)
       return t
 
 def prune(node, examples):
